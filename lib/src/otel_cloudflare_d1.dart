@@ -2,7 +2,6 @@
 // Copyright 2025-2026 Mindful Software LLC d/b/a Dartastic.io, All rights reserved.
 
 import 'package:dartastic_opentelemetry/dartastic_opentelemetry.dart';
-import 'package:dartastic_opentelemetry_api/dartastic_opentelemetry_api.dart';
 
 import 'otel_cloudflare_d1_suppression.dart';
 
@@ -64,66 +63,94 @@ Future<T> tracedCloudflareD1<T>({
   final t = tracer ?? OTel.tracerProvider().getTracer('otel_cloudflare_d1');
   final span = t.startSpan('cloudflare_d1 $operation', kind: SpanKind.client);
   try {
-    span.setStringAttribute('rpc.system', 'cloudflare_d1');
-    span.setStringAttribute('rpc.method', operation);
-    span.setStringAttribute('db.system', 'sqlite');
+    span.addAttributes(
+        OTel.attributes([OTel.attributeString('rpc.system', 'cloudflare_d1')]));
+    span.addAttributes(
+        OTel.attributes([OTel.attributeString('rpc.method', operation)]));
+    span.addAttributes(
+        OTel.attributes([OTel.attributeString('db.system', 'sqlite')]));
     final r = await invoke();
     final res = r.result;
     if (res != null) {
       if (res.account != null) {
-        span.setStringAttribute('cloudflare.account', res.account!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('cloudflare.account', res.account!)]));
       }
       if (res.databaseId != null) {
-        span.setStringAttribute('cloudflare_d1.database.id', res.databaseId!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeString('cloudflare_d1.database.id', res.databaseId!)
+        ]));
       }
       if (res.databaseName != null) {
-        span.setStringAttribute('db.name', res.databaseName!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('db.name', res.databaseName!)]));
       }
       if (res.region != null) {
-        span.setStringAttribute('cloudflare.region', res.region!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('cloudflare.region', res.region!)]));
       }
       if (res.statementKind != null) {
-        span.setStringAttribute(
-            'cloudflare_d1.statement.kind', res.statementKind!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeString(
+              'cloudflare_d1.statement.kind', res.statementKind!)
+        ]));
       }
       if (res.rowsRead != null) {
-        span.setIntAttribute('cloudflare_d1.rows_read', res.rowsRead!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeInt('cloudflare_d1.rows_read', res.rowsRead!)]));
       }
       if (res.rowsWritten != null) {
-        span.setIntAttribute('cloudflare_d1.rows_written', res.rowsWritten!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeInt('cloudflare_d1.rows_written', res.rowsWritten!)
+        ]));
       }
       if (res.rowsReturned != null) {
-        span.setIntAttribute('cloudflare_d1.rows_returned', res.rowsReturned!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeInt('cloudflare_d1.rows_returned', res.rowsReturned!)
+        ]));
       }
       if (res.changes != null) {
-        span.setIntAttribute('cloudflare_d1.changes', res.changes!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeInt('cloudflare_d1.changes', res.changes!)]));
       }
       if (res.durationMs != null) {
-        span.setIntAttribute('cloudflare_d1.duration_ms', res.durationMs!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeInt('cloudflare_d1.duration_ms', res.durationMs!)]));
       }
       if (res.sizeBytes != null) {
-        span.setIntAttribute('cloudflare_d1.size_bytes', res.sizeBytes!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeInt('cloudflare_d1.size_bytes', res.sizeBytes!)]));
       }
       if (res.batchSize != null) {
-        span.setIntAttribute('cloudflare_d1.batch_size', res.batchSize!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeInt('cloudflare_d1.batch_size', res.batchSize!)]));
       }
       if (res.lastRowId != null) {
-        span.setStringAttribute('cloudflare_d1.last_row_id', res.lastRowId!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeString('cloudflare_d1.last_row_id', res.lastRowId!)
+        ]));
       }
       if (res.metaServedBy != null) {
-        span.setStringAttribute('cloudflare_d1.served_by', res.metaServedBy!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeString('cloudflare_d1.served_by', res.metaServedBy!)
+        ]));
       }
       if (res.statusCode != null) {
-        span.setIntAttribute('http.response.status_code', res.statusCode!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeInt('http.response.status_code', res.statusCode!)]));
       }
       if (res.errorCode != null) {
-        span.setStringAttribute('cloudflare_d1.error.code', res.errorCode!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeString('cloudflare_d1.error.code', res.errorCode!)
+        ]));
       }
       final fail = res.errorCode != null ||
           (res.statusCode != null && res.statusCode! >= 400);
       if (fail) {
-        span.setStringAttribute(ErrorResource.errorType.key,
-            res.errorCode ?? 'cloudflare_d1.error');
+        span.addAttributes(OTel.attributes([
+          OTel.attributeString(ErrorResource.errorType.key,
+              res.errorCode ?? 'cloudflare_d1.error')
+        ]));
         span.setStatus(SpanStatusCode.Error, res.errorMessage);
       }
     }
